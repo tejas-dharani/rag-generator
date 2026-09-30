@@ -31,7 +31,7 @@ async function loadDocuments() {
       <div class="name">
         ${escapeHtml(d.filename)}
         <div class="sub"><span class="badge ${d.status}">${d.status}</span>
-          ${d.status === "ready" ? `${d.chunk_count} chunks · ` : ""}${formatBytes(d.size_bytes)}</div>
+          ${d.status === "ready" ? `${d.chunk_count} chunk${d.chunk_count === 1 ? "" : "s"} · ` : ""}${formatBytes(d.size_bytes)}</div>
         ${d.error ? `<div class="err">${escapeHtml(d.error)}</div>` : ""}
       </div>
       <button class="icon-btn" data-id="${d.id}" title="Remove document">×</button>

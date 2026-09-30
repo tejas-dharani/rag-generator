@@ -13,7 +13,7 @@ test:
 	uv run pytest
 
 eval:
-	uv run python -m eval.run_eval
+	uv run python -m eval.run_eval $(ARGS)
 
 docker:
 	docker compose up --build
