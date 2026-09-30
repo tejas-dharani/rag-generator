@@ -216,3 +216,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# RAG Generator runtime data (indexes, uploads, downloaded models)
+data/

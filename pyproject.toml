@@ -1,0 +1,40 @@
+[project]
+name = "rag-generator"
+version = "0.1.0"
+description = "Turn any set of documents into a grounded question-answering (RAG) app at runtime."
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "python-multipart>=0.0.9",
+    "pydantic-settings>=2.4",
+    "openai>=1.50",
+    "fastembed>=0.4",
+    "chromadb>=0.5",
+    "rank-bm25>=0.2.2",
+    "pypdf>=4.3",
+    "python-docx>=1.1",
+    "beautifulsoup4>=4.12",
+    "markdown>=3.6",
+    "pyyaml>=6.0",
+    # onnxruntime dropped Intel-Mac wheels after 1.23.x
+    "onnxruntime<1.24; sys_platform == 'darwin' and platform_machine == 'x86_64'",
+]
+
+[project.optional-dependencies]
+anthropic = ["anthropic>=0.40"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "httpx>=0.27",
+    "reportlab>=4.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.uv]
+package = false
