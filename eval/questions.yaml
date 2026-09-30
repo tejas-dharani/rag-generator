@@ -1,0 +1,86 @@
+# Evaluation set for the sample documents.
+#
+# Each collection is built from a folder in sample_docs/.
+#   expect_all:  every phrase must appear in the answer (case-insensitive)
+#   expect_file: the source file that contains the answer (checked in retrieval and citations)
+#   out_of_scope questions must be refused ("couldn't find ...")
+
+collections:
+  - name: Brightleaf HR Handbook
+    folder: sample_docs/hr_handbook
+    questions:
+      - question: How many days of paid annual leave do full-time employees get?
+        expect_all: ["24"]
+        expect_file: leave_policy.md
+      - question: How many unused leave days can be carried over, and until when must they be used?
+        expect_all: ["5", "31 March"]
+        expect_file: leave_policy.md
+      - question: When is a doctor's certificate needed for sick leave?
+        expect_all: ["3"]
+        expect_file: leave_policy.md
+      - question: How much parental leave do secondary caregivers get?
+        expect_all: ["6 weeks"]
+        expect_file: leave_policy.md
+      - question: What is the maximum nightly hotel rate in Zurich?
+        expect_all: ["250"]
+        expect_file: travel_and_expenses.pdf
+      - question: Can I fly business class on a long-haul flight?
+        expect_all: ["director"]
+        expect_file: travel_and_expenses.pdf
+      - question: What is the mileage reimbursement rate for using my own car?
+        expect_all: ["0.30"]
+        expect_file: travel_and_expenses.pdf
+      - question: What happens if I submit an expense claim 100 days late?
+        expect_all: ["not be reimbursed"]
+        expect_file: travel_and_expenses.pdf
+      - question: Which day is the company-wide office anchor day?
+        expect_all: ["Tuesday"]
+        expect_file: remote_work.docx
+      - question: How long can I work from another country each year?
+        expect_all: ["20 working days"]
+        expect_file: remote_work.docx
+      - question: What internet allowance do remote employees receive?
+        expect_all: ["30 EUR"]
+        expect_file: remote_work.docx
+    out_of_scope:
+      - What is the CEO's salary?
+      - How do I reset the AquaPure X2 filter counter?
+      - What is the capital of Australia?
+
+  - name: AquaPure X2 Manual
+    folder: sample_docs/product_manual
+    questions:
+      - question: What does error code E2 mean?
+        expect_all: ["38"]
+        expect_file: troubleshooting.html
+      - question: What does a flashing amber light indicate?
+        expect_all: ["replace"]
+        expect_file: troubleshooting.html
+      - question: What should I do if the water tastes like plastic after a filter change?
+        expect_all: ["10 litres"]
+        expect_file: troubleshooting.html
+      - question: What is the support phone number?
+        expect_all: ["0800 555 0199"]
+        expect_file: troubleshooting.html
+      - question: How often should the RO membrane be replaced?
+        expect_all: ["24 months"]
+        expect_file: setup_guide.pdf
+      - question: How much water should be discarded before first use?
+        expect_all: ["15"]
+        expect_file: setup_guide.pdf
+      - question: What is the tank capacity?
+        expect_all: ["5 litres"]
+        expect_file: setup_guide.pdf
+      - question: How long is the warranty if I register the product?
+        expect_all: ["5 years"]
+        expect_file: warranty.txt
+      - question: Are filters covered by the warranty?
+        expect_all: ["not covered"]
+        expect_file: warranty.txt
+      - question: What is the restocking fee for returning an opened product?
+        expect_all: ["15%"]
+        expect_file: warranty.txt
+    out_of_scope:
+      - How many days of annual leave do employees get?
+      - What is the price of the AquaPure X2?
+      - Who won the 2022 FIFA World Cup?

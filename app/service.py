@@ -152,6 +152,7 @@ class RAGService:
             top_k=top_k or collection.settings.top_k,
             reranker=reranker,
             min_score=self.settings.rerank_min_score,
+            min_keep=self.settings.rerank_min_keep,
         )
 
     # ---- question answering ----

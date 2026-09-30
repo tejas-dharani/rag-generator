@@ -12,6 +12,13 @@ def test_pdf_keeps_page_numbers():
     assert "Beta" in sections[1].text
 
 
+def test_pdf_hard_wrapped_lines_are_rejoined():
+    data = make_pdf(["Installation\nConnect the supplied inlet hose to the cold water tap adaptor and\nopen the tap slowly. Check for leaks.\nCleaning"])
+    text = parse_file("guide.pdf", data)[0].text
+    assert "adaptor and open the tap slowly." in text
+    assert text.startswith("Installation\n\n")
+
+
 def test_pdf_without_text_raises():
     with pytest.raises(EmptyDocumentError, match="scanned"):
         parse_file("scan.pdf", make_pdf([""]))

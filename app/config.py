@@ -27,7 +27,9 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     reranker_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
     rerank_enabled: bool = True
-    # Chunks whose rerank relevance (0-1) falls below this are dropped as off-topic.
+    # The best `rerank_min_keep` chunks always reach the LLM, which makes the final "is this answerable?"
+    # call; cross-encoder scores alone are too noisy for that. Further chunks must score >= rerank_min_score.
+    rerank_min_keep: int = 3
     rerank_min_score: float = 0.01
 
     # Retrieval / chunking defaults (overridable per collection)
@@ -38,11 +40,13 @@ class Settings(BaseSettings):
 
     # App
     data_dir: Path = Path("./data")
+    # Where downloaded embedding/reranker models are cached (default: <data_dir>/models).
+    models_cache_dir: Path | None = None
     max_upload_mb: int = 25
 
     @property
     def models_dir(self) -> Path:
-        return self.data_dir / "models"
+        return self.models_cache_dir or self.data_dir / "models"
 
     @property
     def uploads_dir(self) -> Path:

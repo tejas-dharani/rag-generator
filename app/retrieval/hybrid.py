@@ -63,6 +63,7 @@ def hybrid_search(
     top_k: int,
     reranker: Reranker | None = None,
     min_score: float = 0.0,
+    min_keep: int = 3,
 ) -> list[RetrievedChunk]:
     fused = reciprocal_rank_fusion([vector_hits, keyword_hits])
     if not fused:
@@ -73,4 +74,5 @@ def hybrid_search(
     candidates = [c for c, _ in fused]
     scores = reranker.score(query, [c.text for c in candidates])
     ranked = sorted(zip(candidates, scores), key=lambda pair: pair[1], reverse=True)
-    return [RetrievedChunk.from_stored(c, s) for c, s in ranked[:top_k] if s >= min_score]
+    kept = [pair for i, pair in enumerate(ranked[:top_k]) if i < min_keep or pair[1] >= min_score]
+    return [RetrievedChunk.from_stored(c, s) for c, s in kept]

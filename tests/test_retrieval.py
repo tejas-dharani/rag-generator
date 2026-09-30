@@ -30,9 +30,15 @@ class FakeReranker:
 
 def test_reranker_reorders_and_filters_irrelevant():
     vector = [_chunk("x", "shipping times"), _chunk("y", "refund within 30 days")]
-    results = hybrid_search("refund?", vector, [], top_k=5, reranker=FakeReranker(), min_score=0.01)
+    results = hybrid_search("refund?", vector, [], top_k=5, reranker=FakeReranker(), min_score=0.01, min_keep=0)
     assert [r.id for r in results] == ["y"]
     assert results[0].filename == "y.txt" and results[0].score == 0.9
+
+
+def test_min_keep_always_passes_best_chunks_to_llm():
+    vector = [_chunk("x", "shipping times"), _chunk("z", "opening hours"), _chunk("y", "refund within 30 days")]
+    results = hybrid_search("refund?", vector, [], top_k=5, reranker=FakeReranker(), min_score=0.01, min_keep=2)
+    assert [r.id for r in results][0] == "y" and len(results) == 2
 
 
 def test_service_retrieve_end_to_end(service):

@@ -75,9 +75,29 @@ def _clean(text: str) -> str:
 def _parse_pdf(data: bytes) -> list[Section]:
     reader = PdfReader(io.BytesIO(data))
     return [
-        Section(text=page.extract_text() or "", page=number)
+        Section(text=_unwrap_pdf_lines(page.extract_text() or ""), page=number)
         for number, page in enumerate(reader.pages, start=1)
     ]
+
+
+def _unwrap_pdf_lines(text: str) -> str:
+    """PDF text comes back hard-wrapped at the page width. Rejoin wrapped lines into paragraphs,
+    keeping breaks after sentence ends and after short lines (usually headings)."""
+    lines = [line.strip() for line in text.splitlines()]
+    out: list[str] = []
+    for line in lines:
+        if not line:
+            out.append("")
+            continue
+        if out and out[-1] and not re.search(r"[.!?:]$", out[-1]) and len(out[-1]) >= 50:
+            if out[-1].endswith("-") and line[:1].islower():
+                out[-1] = out[-1][:-1] + line  # de-hyphenate "mainte-\nnance"
+            else:
+                out[-1] += " " + line
+        else:
+            out.append(line)
+    # A sentence-ending line followed by a new line starts a new paragraph.
+    return "\n\n".join(p for p in out if p)
 
 
 def _parse_docx(data: bytes) -> list[Section]:

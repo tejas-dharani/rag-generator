@@ -1,0 +1,24 @@
+AquaPure X2 Water Purifier — Warranty Terms
+(Fictional product. Sample document for the RAG Generator demo.)
+
+Coverage period
+The AquaPure X2 main unit is covered by a 3-year limited warranty from the date of purchase. The UV lamp is covered for 1 year. Filters and the RO membrane are consumables and are not covered by the warranty.
+
+Extending the warranty
+Registering the product at aquapure.example/register within 30 days of purchase extends the main unit warranty to 5 years. Registration requires the serial number and a copy of the receipt.
+
+What is covered
+The warranty covers defects in materials and workmanship under normal household use, including failures of the pump, control board, leak sensor and dispensing valve.
+
+What is not covered
+- Damage caused by installation that does not follow the installation guide
+- Use with water above 38 °C or with non-mains water sources (wells, rainwater) without a pre-filter
+- Commercial use (for example in offices with more than 20 people or in restaurants)
+- Damage from freezing
+- Cosmetic damage such as scratches and dents
+
+Making a claim
+Contact support with your serial number, proof of purchase, and a description of the problem. If the fault is confirmed, AquaPure will repair or replace the unit at its choice. Repairs are normally completed within 10 working days. Replacement units carry the remainder of the original warranty or 90 days, whichever is longer.
+
+Returns
+Unused products in original packaging can be returned within 30 days of purchase for a full refund. Opened products can be returned within 30 days subject to a 15% restocking fee.
