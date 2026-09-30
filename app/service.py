@@ -2,9 +2,12 @@
 
 import hashlib
 import logging
+from collections.abc import Iterator
 from pathlib import Path
 
 from app.config import Settings
+from app.generation.llm import LLMProvider, get_llm
+from app.generation.prompts import NOT_FOUND, build_condense_messages, build_messages, cited_numbers
 from app.ingestion.chunker import chunk_sections
 from app.ingestion.parsers import SUPPORTED_EXTENSIONS, parse_file
 from app.retrieval.bm25 import BM25Cache
@@ -21,12 +24,17 @@ class NotFoundError(LookupError):
 
 
 class RAGService:
-    def __init__(self, settings: Settings, embedder_factory=get_embedder):
+    def __init__(self, settings: Settings, embedder_factory=get_embedder, llm_factory=get_llm):
         self.settings = settings
         self.metadata = MetadataStore(settings.db_path)
         self.vectors = VectorStore(settings.chroma_dir)
         self.bm25 = BM25Cache()
         self._embedder_factory = embedder_factory
+        self._llm_factory = llm_factory
+
+    @property
+    def llm(self) -> LLMProvider:
+        return self._llm_factory()
 
     # ---- collections ----
 
@@ -145,6 +153,51 @@ class RAGService:
             reranker=reranker,
             min_score=self.settings.rerank_min_score,
         )
+
+    # ---- question answering ----
+
+    def answer_stream(self, collection_id: str, question: str, history: list[dict] | None = None) -> Iterator[dict]:
+        """Yield events: `sources` (retrieved chunks), `token` (answer text) and `done` (final answer + citations)."""
+        question = question.strip()
+        if not question:
+            raise ValueError("Question is empty")
+        self.get_collection(collection_id)
+
+        search_query = question
+        if history:
+            # Follow-ups like "what about part-time staff?" need the conversation to be searchable.
+            search_query = self.llm.generate(build_condense_messages(question, history)) or question
+
+        chunks = self.retrieve(collection_id, search_query)
+        sources = [
+            {"number": n, "filename": c.filename, "page": c.page, "heading": c.heading, "text": c.text, "score": round(c.score, 4)}
+            for n, c in enumerate(chunks, start=1)
+        ]
+        yield {"type": "sources", "sources": sources, "search_query": search_query}
+
+        if not chunks:
+            # Nothing relevant was retrieved: refuse without spending an LLM call.
+            yield {"type": "token", "text": NOT_FOUND}
+            yield {"type": "done", "answer": NOT_FOUND, "cited": [], "grounded": False}
+            return
+
+        parts: list[str] = []
+        for token in self.llm.stream(build_messages(question, chunks, history)):
+            parts.append(token)
+            yield {"type": "token", "text": token}
+        answer = "".join(parts).strip()
+        cited = cited_numbers(answer, len(chunks))
+        yield {"type": "done", "answer": answer, "cited": cited, "grounded": bool(cited) and NOT_FOUND not in answer}
+
+    def answer(self, collection_id: str, question: str, history: list[dict] | None = None) -> dict:
+        result: dict = {}
+        for event in self.answer_stream(collection_id, question, history):
+            if event["type"] == "sources":
+                result["sources"] = event["sources"]
+                result["search_query"] = event["search_query"]
+            elif event["type"] == "done":
+                result.update(answer=event["answer"], cited=event["cited"], grounded=event["grounded"])
+        return result
 
     def _upload_dir(self, collection_id: str) -> Path:
         return self.settings.uploads_dir / collection_id

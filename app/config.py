@@ -17,7 +17,10 @@ class Settings(BaseSettings):
     openai_base_url: str | None = None
     ollama_base_url: str = "http://localhost:11434/v1"
     anthropic_api_key: str | None = None
-    llm_max_output_tokens: int = 1500
+    # Reasoning models count their hidden reasoning against this limit, so keep it generous.
+    llm_max_output_tokens: int = 4000
+    # Optional: minimal | low | medium | high, for OpenAI reasoning models. Lower is faster.
+    llm_reasoning_effort: str | None = None
 
     # Embeddings / reranking
     embedding_provider: Literal["fastembed", "openai"] = "fastembed"
