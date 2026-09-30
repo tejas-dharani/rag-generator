@@ -9,6 +9,7 @@ from app.ingestion.chunker import chunk_sections
 from app.ingestion.parsers import SUPPORTED_EXTENSIONS, parse_file
 from app.retrieval.bm25 import BM25Cache
 from app.retrieval.embedder import Embedder, get_embedder
+from app.retrieval.hybrid import RetrievedChunk, get_reranker, hybrid_search
 from app.retrieval.vector_store import VectorStore
 from app.storage.metadata import Collection, CollectionSettings, Document, MetadataStore
 
@@ -126,6 +127,24 @@ class RAGService:
         self.bm25.invalidate(collection_id)
         self.metadata.delete_document(doc_id)
         self._upload_path(collection_id, doc.id, doc.filename).unlink(missing_ok=True)
+
+    # ---- retrieval ----
+
+    def retrieve(self, collection_id: str, query: str, top_k: int | None = None) -> list[RetrievedChunk]:
+        collection = self.get_collection(collection_id)
+        n = self.settings.candidates
+        vector_hits = self.vectors.query(collection.id, self.embedder_for(collection).embed_query(query), n)
+        bm25 = self.bm25.get(collection.id, lambda: self.vectors.all_chunks(collection.id))
+        keyword_hits = bm25.search(query, n)
+        reranker = get_reranker(self.settings.reranker_model) if self.settings.rerank_enabled else None
+        return hybrid_search(
+            query,
+            vector_hits,
+            keyword_hits,
+            top_k=top_k or collection.settings.top_k,
+            reranker=reranker,
+            min_score=self.settings.rerank_min_score,
+        )
 
     def _upload_dir(self, collection_id: str) -> Path:
         return self.settings.uploads_dir / collection_id
