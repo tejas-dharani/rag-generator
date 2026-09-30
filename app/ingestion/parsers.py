@@ -136,7 +136,7 @@ def _parse_markdown(text: str) -> list[Section]:
 
 
 _HTML_HEADINGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
-_HTML_BLOCKS = _HTML_HEADINGS | {"p", "li", "pre", "blockquote", "td", "th", "dt", "dd", "figcaption"}
+_HTML_BLOCKS = _HTML_HEADINGS | {"p", "li", "pre", "blockquote", "tr", "dt", "dd", "figcaption"}
 
 
 def _parse_html(html: str) -> list[Section]:
@@ -153,7 +153,9 @@ def _parse_html(html: str) -> list[Section]:
         # Skip blocks nested inside another block we already collect (e.g. <p> inside <li>).
         if element.find_parent(_HTML_BLOCKS - _HTML_HEADINGS):
             continue
-        text = element.get_text(" ", strip=True)
+        # Table rows keep their cells together so each row reads as one fact.
+        text = element.get_text(" | " if element.name == "tr" else " ", strip=True)
+        text = re.sub(r"\s+([.,;:!?])", r"\1", text)  # "<b>30 days</b>." -> "30 days."
         if not text:
             continue
         if element.name in _HTML_HEADINGS:

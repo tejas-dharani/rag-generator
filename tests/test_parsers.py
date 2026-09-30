@@ -36,11 +36,13 @@ def test_markdown_sections_and_code_blocks():
 def test_html_strips_scripts_and_uses_headings():
     html = """<html><head><title>Guide</title><script>var x = 1;</script></head>
     <body><nav>Menu</nav><h1>Returns</h1><p>Return within <b>30 days</b>.</p>
-    <ul><li>Keep the receipt</li></ul></body></html>"""
+    <ul><li>Keep the receipt</li></ul>
+    <table><tr><th>Code</th><th>Meaning</th></tr><tr><td>E1</td><td>Low pressure</td></tr></table></body></html>"""
     sections = parse_file("page.html", html.encode())
     assert sections[0].heading == "Returns"
-    assert "Return within 30 days ." in sections[0].text or "Return within 30 days." in sections[0].text
+    assert "Return within 30 days." in sections[0].text
     assert "Keep the receipt" in sections[0].text
+    assert "E1 | Low pressure" in sections[0].text
     assert "var x" not in sections[0].text and "Menu" not in sections[0].text
 
 

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RAG Generator</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="/">RAG Generator</a>
+    <span>/</span>
+    <strong id="title">…</strong>
+    <span class="model" id="model"></span>
+  </header>
+
+  <div class="chat-layout">
+    <aside class="sidebar">
+      <div>
+        <h2 id="collection-name">…</h2>
+        <div class="hint" id="collection-desc"></div>
+      </div>
+
+      <div>
+        <h3>Documents</h3>
+        <ul class="doclist" id="docs"></ul>
+        <div class="dropzone" id="dropzone" style="padding: 14px; margin-top: 10px">
+          <input type="file" multiple>
+          <strong>Add documents</strong><br><span class="hint">drop or click</span>
+        </div>
+        <div class="error" id="upload-error"></div>
+      </div>
+
+      <div>
+        <h3>API endpoint</h3>
+        <pre class="snippet" id="api-snippet"></pre>
+      </div>
+
+      <div>
+        <h3>Chat</h3>
+        <button class="secondary small" id="clear">New conversation</button>
+      </div>
+    </aside>
+
+    <section class="chat">
+      <div class="messages" id="messages">
+        <div class="welcome" id="welcome">
+          <h2>Ask anything about these documents</h2>
+          <p>Answers come only from the uploaded documents, with numbered citations you can click to see the source text.</p>
+        </div>
+      </div>
+      <form class="ask" id="ask-form">
+        <textarea id="question" rows="1" placeholder="Ask a question… (Enter to send, Shift+Enter for a new line)" maxlength="2000"></textarea>
+        <button type="submit" id="send">Ask</button>
+      </form>
+    </section>
+  </div>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/chat.js"></script>
+</body>
+</html>

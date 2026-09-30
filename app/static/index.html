@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RAG Generator</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="top">
+    <a class="logo" href="/">RAG Generator</a>
+    <span class="model" id="model"></span>
+  </header>
+
+  <main class="page">
+    <h1>Turn any documents into a Q&amp;A app</h1>
+    <p class="lead">Upload a set of documents and get a chat app that answers questions from them, with citations. No code changes needed.</p>
+
+    <form class="card" id="create-form">
+      <h2>Create a new RAG app</h2>
+      <label for="name">Name</label>
+      <input type="text" id="name" placeholder="e.g. HR Policies, Product Manual, Research Papers" maxlength="100" required>
+
+      <label for="description">Description <span class="hint">(optional)</span></label>
+      <input type="text" id="description" placeholder="What are these documents about?" maxlength="500">
+
+      <label>Documents</label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" multiple>
+        <strong>Drop files here</strong> or click to browse<br>
+        <span class="hint">PDF, DOCX, Markdown, TXT, HTML</span>
+      </div>
+      <ul class="filelist" id="filelist"></ul>
+
+      <details>
+        <summary>Advanced settings</summary>
+        <div class="row">
+          <div>
+            <label for="chunk_size">Chunk size (tokens)</label>
+            <input type="number" id="chunk_size" min="100" max="2000" placeholder="400">
+          </div>
+          <div>
+            <label for="chunk_overlap">Chunk overlap</label>
+            <input type="number" id="chunk_overlap" min="0" max="500" placeholder="60">
+          </div>
+          <div>
+            <label for="top_k">Sources per answer</label>
+            <input type="number" id="top_k" min="1" max="20" placeholder="5">
+          </div>
+        </div>
+        <p class="hint">Leave blank for defaults. The local embedding model reads at most 512 tokens per chunk.</p>
+      </details>
+
+      <div class="actions">
+        <button type="submit" id="create-btn">Create app</button>
+        <span class="error" id="create-error"></span>
+      </div>
+    </form>
+
+    <h2 style="margin-top: 40px">Your RAG apps</h2>
+    <div class="grid" id="collections"></div>
+  </main>
+
+  <script src="/static/common.js"></script>
+  <script src="/static/home.js"></script>
+</body>
+</html>
